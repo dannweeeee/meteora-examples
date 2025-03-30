@@ -7,7 +7,7 @@ import * as dotenv from "dotenv";
 
 dotenv.config();
 
-async function main() {
+async function createBalancePosition() {
   console.log("Starting balance position creation process...");
 
   const connection = new Connection(
@@ -16,8 +16,9 @@ async function main() {
   );
 
   // Initialise user wallet (from bs58 private key)
-  const secretKey = bs58.decode(process.env.PRIVATE_KEY || "");
-  const user = Keypair.fromSecretKey(secretKey);
+  const user = Keypair.fromSecretKey(
+    bs58.decode(process.env.PRIVATE_KEY || "")
+  );
   console.log("User wallet initialized:", user.publicKey.toBase58());
 
   // Initialise DLMM pool
@@ -104,7 +105,7 @@ async function main() {
   }
 }
 
-main().catch((error) => {
+createBalancePosition().catch((error) => {
   console.error("Fatal error in main function:", error);
   process.exit(1);
 });

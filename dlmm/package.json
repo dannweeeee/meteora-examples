@@ -4,7 +4,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "create-balance-position": "tsx src/create-position/balance.ts"
+    "create-balance-position": "tsx src/create-position/balance.ts",
+    "create-imbalance-position": "tsx src/create-position/imbalance.ts"
   },
   "keywords": [],
   "author": "@dannweeeee",
