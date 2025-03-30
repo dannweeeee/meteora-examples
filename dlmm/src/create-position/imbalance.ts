@@ -10,7 +10,7 @@ async function createImbalancePosition() {
   console.log("Starting imbalance position creation process...");
 
   const connection = new Connection(
-    process.env.RPC_URL || "https://api.mainnet-beta.solana.com",
+    process.env.MAINNET_RPC_URL || "https://api.mainnet-beta.solana.com",
     "confirmed"
   );
 

@@ -6,7 +6,9 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "create-balance-position": "tsx src/create-position/balance.ts",
     "create-imbalance-position": "tsx src/create-position/imbalance.ts",
-    "create-one-sided-position": "tsx src/create-position/one-sided.ts"
+    "create-one-sided-position": "tsx src/create-position/one-sided.ts",
+    "get-active-bin": "tsx src/get-position/get-active-bin.ts",
+    "get-positions-list": "tsx src/get-position/get-positions-list.ts"
   },
   "keywords": [],
   "author": "@dannweeeee",
