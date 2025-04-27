@@ -3,7 +3,7 @@ import { Connection, Keypair, PublicKey } from "@solana/web3.js";
 import { AnchorProvider, Wallet } from "@coral-xyz/anchor";
 import * as dotenv from "dotenv";
 import { derivePoolAddressWithConfig } from "@meteora-ag/dynamic-amm-sdk/dist/cjs/src/amm/utils";
-import { BN } from "bn.js";
+import { BN } from "@coral-xyz/anchor";
 import bs58 from "bs58";
 
 dotenv.config();
