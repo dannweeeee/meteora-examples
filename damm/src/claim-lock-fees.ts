@@ -1,11 +1,14 @@
 import { Connection, PublicKey, Keypair } from "@solana/web3.js";
 import AmmImpl from "@meteora-ag/dynamic-amm-sdk";
 import bs58 from "bs58";
+import { ComputeBudgetProgram } from "@solana/web3.js";
 
 async function checkAndClaimLockFees(
   connection: Connection,
   poolAddress: PublicKey,
-  owner: Keypair
+  owner: Keypair,
+  payer?: Keypair,
+  receiver?: Keypair
 ) {
   try {
     // init AMM instance
@@ -35,37 +38,102 @@ async function checkAndClaimLockFees(
     const amountToClaim = unclaimedFees.lp;
 
     // create and send claim transaction
-    const claimTx = await amm.claimLockFee(owner.publicKey, amountToClaim);
+    const claimTx = await amm.claimLockFee(
+      owner.publicKey,
+      amountToClaim,
+      payer?.publicKey,
+      receiver?.publicKey
+    );
+
+    // Add priority fees
+    const modifyComputeUnits = ComputeBudgetProgram.setComputeUnitLimit({
+      units: 300000,
+    });
+    const addPriorityFee = ComputeBudgetProgram.setComputeUnitPrice({
+      microLamports: 50000,
+    });
+
+    claimTx.add(modifyComputeUnits);
+    claimTx.add(addPriorityFee);
 
     // sign and send transaction
-    const signature = await connection.sendTransaction(claimTx, [owner]);
+    const signers = [owner];
+    if (payer) signers.push(payer);
+    if (receiver) signers.push(receiver);
+
+    const signature = await connection.sendTransaction(claimTx, signers);
 
     console.log(`Claim transaction sent: ${signature}`);
     console.log("Waiting for confirmation...");
 
-    await connection.confirmTransaction(signature);
-    console.log("Fees claimed successfully!");
+    const maxRetries = 3;
+    let retryCount = 0;
+    let confirmed = false;
+
+    while (retryCount < maxRetries && !confirmed) {
+      try {
+        const confirmation = await connection.confirmTransaction(
+          {
+            signature,
+            blockhash: claimTx.recentBlockhash!,
+            lastValidBlockHeight: (
+              await connection.getLatestBlockhash()
+            ).lastValidBlockHeight,
+          },
+          "confirmed"
+        );
+
+        if (confirmation.value.err) {
+          throw new Error(`Transaction failed: ${confirmation.value.err}`);
+        }
+
+        confirmed = true;
+        console.log("Fees claimed successfully!");
+      } catch (error) {
+        retryCount++;
+        if (retryCount === maxRetries) {
+          console.error(`Transaction failed after ${maxRetries} attempts.`);
+          console.error(
+            "Please check the transaction status manually using the signature above."
+          );
+          throw error;
+        }
+        console.log(`Confirmation attempt ${retryCount} failed, retrying...`);
+        await new Promise((resolve) => setTimeout(resolve, 2000)); // Wait 2 seconds before retry
+      }
+    }
   } catch (error) {
     console.error("Error claiming fees:", error);
   }
 }
 
-// Main execution
 async function main() {
   try {
-    const poolAddress = new PublicKey("");
-
-    const PRIVATE_KEY = "";
-    const secretKey = bs58.decode(PRIVATE_KEY);
-    const wallet = Keypair.fromSecretKey(secretKey);
-    console.log("Wallet public key:", wallet.publicKey.toBase58());
-
-    const connection = new Connection(
-      "https://api.mainnet-beta.solana.com",
-      "confirmed"
+    const poolAddress = new PublicKey(
+      ""
     );
 
-    await checkAndClaimLockFees(connection, poolAddress, wallet);
+    const PAYER_PRIVATE_KEY =
+      "";
+    const payerSecretKey = bs58.decode(PAYER_PRIVATE_KEY);
+    const payer = Keypair.fromSecretKey(payerSecretKey);
+    console.log("Payer public key:", payer.publicKey.toBase58());
+
+    const OWNER_PRIVATE_KEY =
+      "";
+    const ownerSecretKey = bs58.decode(OWNER_PRIVATE_KEY);
+    const owner = Keypair.fromSecretKey(ownerSecretKey);
+    console.log("Owner public key:", owner.publicKey.toBase58());
+
+    const RECEIVER_PRIVATE_KEY =
+      "";
+    const receiverSecretKey = bs58.decode(RECEIVER_PRIVATE_KEY);
+    const receiver = Keypair.fromSecretKey(receiverSecretKey);
+    console.log("Receiver public key:", receiver.publicKey.toBase58());
+
+    const connection = new Connection("https://api.devnet.solana.com", "confirmed");
+
+    await checkAndClaimLockFees(connection, poolAddress, owner, payer, receiver);
   } catch (error) {
     console.error("Error:", error);
     process.exit(1);
