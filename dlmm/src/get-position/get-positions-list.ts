@@ -9,14 +9,12 @@ async function getPositionsList() {
   console.log("Fetching user positions...");
 
   const connection = new Connection(
-    process.env.MAINNET_RPC_URL || "https://api.mainnet-beta.solana.com",
+    "https://api.mainnet-beta.solana.com",
     "confirmed"
   );
 
   // Initialize user wallet (from bs58 private key)
-  const user = Keypair.fromSecretKey(
-    bs58.decode(process.env.PRIVATE_KEY || "")
-  );
+  const user = Keypair.fromSecretKey(bs58.decode(""));
   console.log("User wallet initialized:", user.publicKey.toBase58());
 
   // Initialize DLMM pool

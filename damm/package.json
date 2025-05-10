@@ -4,7 +4,7 @@
   "main": "index.js",
   "scripts": {
     "create-constant-product-pool": "tsx src/create-pool/constant-product.ts",
-    "claim-lock-fees": "tsx src/claim-lock-fees.ts"
+    "claim-lock-fees": "tsx src/claim-fees/claim-lock-fees.ts"
   },
   "keywords": [],
   "author": "@dannweeeee",

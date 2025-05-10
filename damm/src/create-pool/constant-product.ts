@@ -13,14 +13,12 @@ async function createConstantProductPool() {
 
   // Initialise connection
   const mainnetConnection = new Connection(
-    process.env.MAINNET_RPC_URL || "https://api.mainnet-beta.solana.com",
+    "https://api.mainnet-beta.solana.com",
     "confirmed"
   );
 
   // Initialise user wallet
-  const userWallet = new Wallet(
-    Keypair.fromSecretKey(bs58.decode(process.env.PRIVATE_KEY || ""))
-  );
+  const userWallet = new Wallet(Keypair.fromSecretKey(bs58.decode("")));
   console.log("User wallet initialized:", userWallet.publicKey.toBase58());
 
   // Initialise anchor provider

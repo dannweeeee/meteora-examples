@@ -109,31 +109,35 @@ async function checkAndClaimLockFees(
 
 async function main() {
   try {
-    const poolAddress = new PublicKey(
-      ""
-    );
+    const poolAddress = new PublicKey("");
 
-    const PAYER_PRIVATE_KEY =
-      "";
+    const PAYER_PRIVATE_KEY = "";
     const payerSecretKey = bs58.decode(PAYER_PRIVATE_KEY);
     const payer = Keypair.fromSecretKey(payerSecretKey);
     console.log("Payer public key:", payer.publicKey.toBase58());
 
-    const OWNER_PRIVATE_KEY =
-      "";
+    const OWNER_PRIVATE_KEY = "";
     const ownerSecretKey = bs58.decode(OWNER_PRIVATE_KEY);
     const owner = Keypair.fromSecretKey(ownerSecretKey);
     console.log("Owner public key:", owner.publicKey.toBase58());
 
-    const RECEIVER_PRIVATE_KEY =
-      "";
+    const RECEIVER_PRIVATE_KEY = "";
     const receiverSecretKey = bs58.decode(RECEIVER_PRIVATE_KEY);
     const receiver = Keypair.fromSecretKey(receiverSecretKey);
     console.log("Receiver public key:", receiver.publicKey.toBase58());
 
-    const connection = new Connection("https://api.devnet.solana.com", "confirmed");
+    const connection = new Connection(
+      "https://api.mainnet-beta.solana.com",
+      "confirmed"
+    );
 
-    await checkAndClaimLockFees(connection, poolAddress, owner, payer, receiver);
+    await checkAndClaimLockFees(
+      connection,
+      poolAddress,
+      owner,
+      payer,
+      receiver
+    );
   } catch (error) {
     console.error("Error:", error);
     process.exit(1);

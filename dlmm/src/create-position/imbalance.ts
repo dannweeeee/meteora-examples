@@ -10,14 +10,12 @@ async function createImbalancePosition() {
   console.log("Starting imbalance position creation process...");
 
   const connection = new Connection(
-    process.env.MAINNET_RPC_URL || "https://api.mainnet-beta.solana.com",
+    "https://api.mainnet-beta.solana.com",
     "confirmed"
   );
 
   // Initialise user wallet (from bs58 private key)
-  const user = Keypair.fromSecretKey(
-    bs58.decode(process.env.PRIVATE_KEY || "")
-  );
+  const user = Keypair.fromSecretKey(bs58.decode(""));
   console.log("User wallet initialized:", user.publicKey.toBase58());
 
   // Initialise DLMM pool

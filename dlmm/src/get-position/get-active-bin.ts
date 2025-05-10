@@ -8,7 +8,7 @@ async function getActiveBin() {
   console.log("Fetching active bin information...");
 
   const connection = new Connection(
-    process.env.MAINNET_RPC_URL || "https://api.mainnet-beta.solana.com",
+    "https://api.mainnet-beta.solana.com",
     "confirmed"
   );
 
