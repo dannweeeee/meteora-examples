@@ -7,7 +7,7 @@ async function checkAndClaimLockFees(
   connection: Connection,
   poolAddress: PublicKey,
   owner: Keypair,
-  payer?: Keypair,
+  payer: Keypair,
   receiver?: Keypair
 ) {
   try {
@@ -37,12 +37,15 @@ async function checkAndClaimLockFees(
 
     const amountToClaim = unclaimedFees.lp;
 
+    const tempWSolAcc = Keypair.generate();
+
     // create and send claim transaction
     const claimTx = await amm.claimLockFee(
       owner.publicKey,
       amountToClaim,
-      payer?.publicKey,
-      receiver?.publicKey
+      payer.publicKey,
+      receiver?.publicKey,
+      tempWSolAcc?.publicKey
     );
 
     // Add priority fees
@@ -59,7 +62,7 @@ async function checkAndClaimLockFees(
     // sign and send transaction
     const signers = [owner];
     if (payer) signers.push(payer);
-    if (receiver) signers.push(receiver);
+    if (receiver) signers.push(tempWSolAcc);
 
     const signature = await connection.sendTransaction(claimTx, signers);
 
@@ -99,7 +102,7 @@ async function checkAndClaimLockFees(
           throw error;
         }
         console.log(`Confirmation attempt ${retryCount} failed, retrying...`);
-        await new Promise((resolve) => setTimeout(resolve, 2000)); // Wait 2 seconds before retry
+        await new Promise((resolve) => setTimeout(resolve, 2000));
       }
     }
   } catch (error) {
@@ -131,13 +134,7 @@ async function main() {
       "confirmed"
     );
 
-    await checkAndClaimLockFees(
-      connection,
-      poolAddress,
-      owner,
-      payer,
-      receiver
-    );
+    await checkAndClaimLockFees(connection, poolAddress, owner, payer);
   } catch (error) {
     console.error("Error:", error);
     process.exit(1);
