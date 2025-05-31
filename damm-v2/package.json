@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "lock-position": "tsx src/lock-position.ts"
+    "lock-position": "tsx src/lock-position.ts",
+    "claim-position-fee": "tsx src/claim-position-fee.ts"
   },
   "keywords": [],
   "author": "@dannweeeee",

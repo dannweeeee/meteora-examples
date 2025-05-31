@@ -2,9 +2,6 @@ import { Connection, Keypair, PublicKey } from "@solana/web3.js";
 import { CpAmm } from "@meteora-ag/cp-amm-sdk";
 import { BN, Wallet } from "@coral-xyz/anchor";
 import bs58 from "bs58";
-import * as dotenv from "dotenv";
-
-dotenv.config();
 
 async function getAndLockPosition() {
   console.log("Starting position retrieval and locking process...");
