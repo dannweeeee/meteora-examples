@@ -12,6 +12,7 @@ import {
   FeeSchedulerMode,
   MigrationFeeOption,
   TokenDecimal,
+  TokenUpdateAuthorityOption,
 } from "@meteora-ag/dynamic-bonding-curve-sdk";
 import { NATIVE_MINT } from "@solana/spl-token";
 import BN from "bn.js";
@@ -90,6 +91,11 @@ async function createConfig() {
         liquidity: new BN("1"),
       },
     ],
+    tokenUpdateAuthority: TokenUpdateAuthorityOption.Immutable,
+    migrationFee: {
+      feePercentage: 25,
+      creatorFeePercentage: 50,
+    },
   };
 
   try {

@@ -4,11 +4,7 @@ import {
   PublicKey,
   sendAndConfirmTransaction,
 } from "@solana/web3.js";
-import {
-  DynamicBondingCurveClient,
-  TokenType,
-} from "@meteora-ag/dynamic-bonding-curve-sdk";
-import { NATIVE_MINT } from "@solana/spl-token";
+import { DynamicBondingCurveClient } from "@meteora-ag/dynamic-bonding-curve-sdk";
 import bs58 from "bs58";
 
 async function createPool() {
@@ -35,16 +31,13 @@ async function createPool() {
     console.log(`Generated base mint: ${baseMint.publicKey.toString()}`);
 
     const createPoolParam = {
-      quoteMint: NATIVE_MINT,
-      baseMint: baseMint.publicKey,
-      config: configAddress,
-      baseTokenType: TokenType.SPL,
-      quoteTokenType: TokenType.SPL,
       name: "test",
       symbol: "TEST",
       uri: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQFfUnCIPVTtIm4RpwIrOehAhXxNXeuKY2TZQ&s",
       payer: payer.publicKey,
       poolCreator: poolCreator.publicKey,
+      config: configAddress,
+      baseMint: baseMint.publicKey,
     };
 
     const client = new DynamicBondingCurveClient(connection, "confirmed");
