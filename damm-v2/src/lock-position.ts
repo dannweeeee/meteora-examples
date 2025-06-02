@@ -1,7 +1,18 @@
-import { Connection, Keypair, PublicKey } from "@solana/web3.js";
-import { CpAmm } from "@meteora-ag/cp-amm-sdk";
+import {
+  Connection,
+  Keypair,
+  PublicKey,
+  sendAndConfirmTransaction,
+  Transaction,
+} from "@solana/web3.js";
+import { CpAmm, derivePositionNftAccount } from "@meteora-ag/cp-amm-sdk";
 import { BN, Wallet } from "@coral-xyz/anchor";
 import bs58 from "bs58";
+import {
+  AuthorityType,
+  createSetAuthorityInstruction,
+  TOKEN_2022_PROGRAM_ID,
+} from "@solana/spl-token";
 
 async function getAndLockPosition() {
   console.log("Starting position retrieval and locking process...");
@@ -15,6 +26,9 @@ async function getAndLockPosition() {
   const userKeypair = Keypair.fromSecretKey(bs58.decode(""));
   const userWallet = new Wallet(userKeypair);
   console.log("User wallet initialized:", userWallet.publicKey.toBase58());
+
+  const creatorWallet = new PublicKey("");
+  console.log("Creator wallet:", creatorWallet.toBase58());
 
   const cpAmm = new CpAmm(connection);
 
@@ -93,6 +107,34 @@ async function getAndLockPosition() {
     console.log("\nPosition locked successfully!");
     console.log("Transaction: https://solscan.io/tx/" + signature);
     console.log("Vesting account:", vestingAccount.publicKey.toBase58());
+
+    // optional: transfer position to creator
+    // const positionNftAccount = derivePositionNftAccount(
+    //   userPositions[0].positionNftAccount
+    // );
+    // const setAuthorityIx = createSetAuthorityInstruction(
+    //   positionNftAccount,
+    //   userWallet.publicKey,
+    //   AuthorityType.AccountOwner,
+    //   creatorWallet,
+    //   [],
+    //   TOKEN_2022_PROGRAM_ID
+    // );
+    // const assignOwnerTx = new Transaction().add(setAuthorityIx);
+    // const assignSig = await sendAndConfirmTransaction(
+    //   connection,
+    //   assignOwnerTx,
+    //   [userKeypair],
+    //   {
+    //     commitment: "confirmed",
+    //   }
+    // );
+
+    // console.log(
+    //   "Position locked and transferred to creator. Transaction: https://solscan.io/tx/" +
+    //     assignSig
+    // );
+
     process.exit(0);
   } catch (error) {
     console.error("Error:", error);
