@@ -109,11 +109,8 @@ async function getAndLockPosition() {
     console.log("Vesting account:", vestingAccount.publicKey.toBase58());
 
     // optional: transfer position to creator
-    // const positionNftAccount = derivePositionNftAccount(
-    //   userPositions[0].positionNftAccount
-    // );
     // const setAuthorityIx = createSetAuthorityInstruction(
-    //   positionNftAccount,
+    //   userPositions[0].positionNftAccount,
     //   userWallet.publicKey,
     //   AuthorityType.AccountOwner,
     //   creatorWallet,
