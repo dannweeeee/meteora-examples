@@ -23,23 +23,20 @@ async function getAndLockPosition() {
     "confirmed"
   );
 
-  const userKeypair = Keypair.fromSecretKey(bs58.decode(""));
+  const userKeypair = Keypair.fromSecretKey(bs58.decode("YOUR_PRIVATE_KEY"));
   const userWallet = new Wallet(userKeypair);
   console.log("User wallet initialized:", userWallet.publicKey.toBase58());
 
-  const creatorWallet = new PublicKey("");
-  console.log("Creator wallet:", creatorWallet.toBase58());
+  // const creatorWallet = new PublicKey("");
+  // console.log("Creator wallet:", creatorWallet.toBase58());
 
   const cpAmm = new CpAmm(connection);
 
   try {
-    // get pool state
-    const poolState = await cpAmm.fetchPoolState(new PublicKey("")); // DAMM V2 pool address (can use deriveDAMMV2PoolAddress)
-
     // get position address for the user
-    const userPositions = await cpAmm.getUserPositionByPool(
-      new PublicKey(""), // DAMM V2 pool address (can use deriveDAMMV2PoolAddress)
-      userWallet.publicKey // user wallet address
+    let userPositions = await cpAmm.getUserPositionByPool(
+      new PublicKey("YOUR_POOL_ADDRESS"), // DAMM V2 pool address (can use deriveDAMMV2PoolAddress)
+      new PublicKey("YOUR_WALLET_ADDRESS") // user wallet address
     );
 
     if (userPositions.length === 0) {
@@ -65,16 +62,6 @@ async function getAndLockPosition() {
       );
     });
 
-    // lock LP for 1 year
-    const ONE_YEAR_IN_SECONDS = 365 * 24 * 60 * 60; // 1 year in seconds (because my activation type is timestamp)
-    const currentTimestamp = Math.floor(Date.now() / 1000);
-    const cliffPoint = new BN(currentTimestamp + ONE_YEAR_IN_SECONDS);
-    const periodFrequency = new BN(1);
-    const numberOfPeriods = 0; // Set to 0 since we want all liquidity at cliff
-    const cliffUnlockLiquidity =
-      userPositions[0].positionState.unlockedLiquidity;
-    const liquidityPerPeriod = new BN(0);
-
     // create vesting account
     const vestingAccount = Keypair.generate(); // no need to save this keypair
     console.log(
@@ -82,7 +69,50 @@ async function getAndLockPosition() {
       vestingAccount.publicKey.toBase58()
     );
 
-    // Lock the position
+    if (userPositions[0].positionState.vestedLiquidity.gt(new BN(0))) {
+      // Refresh vesting
+      const vestings = await cpAmm.getAllVestingsByPosition(
+        userPositions[0].position
+      );
+
+      console.log("Vestings:", vestings);
+
+      const refreshVestingTx = await cpAmm.refreshVesting({
+        owner: userWallet.publicKey,
+        position: userPositions[0].position,
+        positionNftAccount: userPositions[0].positionNftAccount,
+        pool: userPositions[0].positionState.pool,
+        vestingAccounts: vestings.map((v) => v.publicKey),
+      });
+
+      const refreshVestingSignature = await connection.sendTransaction(
+        refreshVestingTx,
+        [userKeypair]
+      );
+      await connection.confirmTransaction(refreshVestingSignature, "finalized");
+
+      console.log("Vesting refreshed. Refetching position state...");
+      userPositions = await cpAmm.getUserPositionByPool(
+        userPositions[0].positionState.pool,
+        userWallet.publicKey
+      );
+      console.log(
+        "Refetched unlocked liquidity:",
+        userPositions[0].positionState.unlockedLiquidity.toString()
+      );
+    }
+
+    // lock LP
+    const DURATION = 120; // 1 year in seconds (because my activation type is timestamp)
+    const currentTimestamp = Math.floor(Date.now() / 1000);
+    const cliffPoint = new BN(currentTimestamp + DURATION);
+    const periodFrequency = new BN(1);
+    const numberOfPeriods = 0; // Set to 0 since we want all liquidity at cliff
+    const cliffUnlockLiquidity =
+      userPositions[0].positionState.unlockedLiquidity;
+    const liquidityPerPeriod = new BN(0);
+
+    // // Lock the position
     const lockPositionTx = await cpAmm.lockPosition({
       owner: userWallet.publicKey,
       pool: userPositions[0].positionState.pool,
@@ -98,14 +128,14 @@ async function getAndLockPosition() {
     });
 
     // send and confirm the transaction
-    const signature = await connection.sendTransaction(lockPositionTx, [
-      userKeypair,
-      vestingAccount,
-    ]);
-    await connection.confirmTransaction(signature, "confirmed");
+    const lockPositionSignature = await connection.sendTransaction(
+      lockPositionTx,
+      [userKeypair, vestingAccount]
+    );
+    await connection.confirmTransaction(lockPositionSignature, "confirmed");
 
     console.log("\nPosition locked successfully!");
-    console.log("Transaction: https://solscan.io/tx/" + signature);
+    console.log("Transaction: https://solscan.io/tx/" + lockPositionSignature);
     console.log("Vesting account:", vestingAccount.publicKey.toBase58());
 
     // optional: transfer position to creator
