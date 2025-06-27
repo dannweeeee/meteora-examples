@@ -29,12 +29,14 @@ async function checkAndClaimPositionFee() {
 
   try {
     // get pool state
-    const poolState = await cpAmm.fetchPoolState(new PublicKey("")); // DAMM V2 pool address (can use deriveDAMMV2PoolAddress)
+    const poolState = await cpAmm.fetchPoolState(
+      new PublicKey("YOUR_POOL_ADDRESS")
+    ); // DAMM V2 pool address
 
     // get position address for the user
     const userPositions = await cpAmm.getUserPositionByPool(
-      new PublicKey(""), // DAMM V2 pool address (can use deriveDAMMV2PoolAddress)
-      userWallet.publicKey // user wallet address
+      new PublicKey("YOUR_POOL_ADDRESS"), // DAMM V2 pool address
+      new PublicKey("YOUR_WALLET_ADDRESS") // user wallet address
     );
 
     if (userPositions.length === 0) {
@@ -45,12 +47,34 @@ async function checkAndClaimPositionFee() {
     const positionState = await cpAmm.fetchPositionState(
       userPositions[0].position
     );
-    console.log("Position state:", positionState);
+
+    console.log(positionState.metrics.totalClaimedAFee.toString());
+    console.log(positionState.metrics.totalClaimedBFee.toString());
 
     const unClaimedReward = getUnClaimReward(poolState, positionState);
-    console.log("Unclaimed reward:", unClaimedReward);
 
-    // const tempWSolAccount = Keypair.generate(); // use only if your quoteMint is SOL
+    const totalPositionFeeA = positionState.metrics.totalClaimedAFee.add(
+      unClaimedReward.feeTokenA
+    );
+    const totalPositionFeeB = positionState.metrics.totalClaimedBFee.add(
+      unClaimedReward.feeTokenB
+    );
+
+    console.log(
+      "Total Claimed Fee A:",
+      positionState.metrics.totalClaimedAFee.toString()
+    );
+    console.log("Unclaimed Fee A:", unClaimedReward.feeTokenA.toString());
+    console.log("TOTAL POSITION FEE A:", totalPositionFeeA.toString());
+
+    console.log(
+      "Total Claimed Fee B:",
+      positionState.metrics.totalClaimedBFee.toString()
+    );
+    console.log("Unclaimed Fee B:", unClaimedReward.feeTokenB.toString());
+    console.log("TOTAL POSITION FEE B:", totalPositionFeeB.toString());
+
+    // const tempWSolAccount = Keypair.generate();
 
     const claimPositionFeeTx = await cpAmm.claimPositionFee({
       owner: userWallet.publicKey,
@@ -65,7 +89,7 @@ async function checkAndClaimPositionFee() {
       tokenAProgram: getTokenProgram(poolState.tokenAFlag),
       tokenBProgram: getTokenProgram(poolState.tokenBFlag),
       feePayer: userWallet.publicKey,
-      //   tempWSolAccount: tempWSolAccount.publicKey, // use only if your quoteMint is SOL
+      //   tempWSolAccount: tempWSolAccount.publicKey,
     });
 
     // send and confirm the transaction

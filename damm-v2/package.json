@@ -4,7 +4,9 @@
   "main": "index.js",
   "scripts": {
     "lock-position": "tsx src/lock-position.ts",
-    "claim-position-fee": "tsx src/claim-position-fee.ts"
+    "claim-position-fee": "tsx src/claim-position-fee.ts",
+    "split-position": "tsx src/split-position.ts",
+    "refresh-liquidity-and-lock-position": "tsx src/refresh-liquidity-and-lock-position.ts"
   },
   "keywords": [],
   "author": "@dannweeeee",
