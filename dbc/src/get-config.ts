@@ -2,10 +2,10 @@ import { address, createSolanaRpc } from "@solana/kit";
 import bs58 from "bs58";
 
 const rpc = createSolanaRpc(
-  "https://mercuria-fronten-1cd8.mainnet.rpcpool.com/dfacae7d-d474-4d76-abd1-ef8da42a6510"
+  "https://api.mainnet-beta.solana.com"
 );
 
-const CONFIG_ADDRESS = "Cj5BceZ7j8GCPt2cabuXvjaikBiqvLA6EBRFUBLKsKd2";
+const CONFIG_ADDRESS = "YOUR_CONFIG_ADDRESS";
 
 const POOL_CONFIG_DISCRIMINATOR = Buffer.from([
   26, 108, 14, 123, 116, 230, 129, 43,
