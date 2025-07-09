@@ -4,7 +4,8 @@
   "main": "index.js",
   "scripts": {
     "create-config": "tsx src/create-config.ts",
-    "create-pool": "tsx src/create-pool.ts"
+    "create-pool": "tsx src/create-pool.ts",
+    "get-config": "tsx src/get-config.ts"
   },
   "keywords": [],
   "author": "@dannweeeee",
@@ -13,6 +14,7 @@
   "dependencies": {
     "@coral-xyz/anchor": "^0.31.1",
     "@meteora-ag/dynamic-bonding-curve-sdk": "^1.2.1",
+    "@solana/kit": "^2.2.1",
     "@solana/web3.js": "^1.98.2",
     "bn.js": "^5.2.1",
     "bs58": "^6.0.0"
