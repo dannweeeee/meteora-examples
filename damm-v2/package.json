@@ -7,7 +7,8 @@
     "claim-position-fee": "tsx src/claim-position-fee.ts",
     "split-position": "tsx src/split-position.ts",
     "refresh-liquidity-and-lock-position": "tsx src/refresh-liquidity-and-lock-position.ts",
-    "get-user-positions": "tsx src/get-user-positions.ts"
+    "get-user-positions": "tsx src/get-user-positions.ts",
+    "create-pool": "tsx src/create-pool.ts"
   },
   "keywords": [],
   "author": "@dannweeeee",
