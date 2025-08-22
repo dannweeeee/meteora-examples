@@ -143,7 +143,7 @@ async function main() {
     6
   );
   const potentialUtilityAmountPerPeriod = getAmountInLamports(55555.555555, 6);
-  const potentialUtilityVestingFrequency = new BN(2626560); // 1 month interval
+  const potentialUtilityVestingFrequency = new BN(2628000); // 1 month interval
   const potentialUtilityNumberOfPeriod = new BN(30); // 30 months
 
   await createVestingEscrowV2(
@@ -167,7 +167,7 @@ async function main() {
   const marketingCliffTime = activationTime.add(new BN(0)); // immediate vest
   const marketingCliffUnlockAmount = getAmountInLamports(300000, 6);
   const marketingAmountPerPeriod = getAmountInLamports(100000, 6);
-  const marketingVestingFrequency = new BN(2626560); // 1 month interval
+  const marketingVestingFrequency = new BN(2628000); // 1 month interval
   const marketingNumberOfPeriod = new BN(12); // 12 months
 
   await createVestingEscrowV2(
@@ -191,7 +191,7 @@ async function main() {
   const teamCliffTime = activationTime.add(new BN(12 * 30 * 24 * 60 * 60)); // 12 months
   const teamCliffUnlockAmount = getAmountInLamports(333333.333333, 6);
   const teamAmountPerPeriod = getAmountInLamports(27777.777777, 6);
-  const teamVestingFrequency = new BN(2626560); // 1 month interval
+  const teamVestingFrequency = new BN(2628000); // 1 month interval
   const teamNumberOfPeriod = new BN(24); // 24 months
 
   await createVestingEscrowV2(
@@ -220,7 +220,7 @@ async function main() {
     6
   );
   const futureActivationAmountPerPeriod = getAmountInLamports(27777.777777, 6);
-  const futureActivationVestingFrequency = new BN(2626560); // 1 month interval
+  const futureActivationVestingFrequency = new BN(2628000); // 1 month interval
   const futureActivationNumberOfPeriod = new BN(33); // 33 months
 
   await createVestingEscrowV2(
@@ -268,7 +268,7 @@ async function main() {
   const advisorCliffTime = activationTime.add(new BN(12 * 30 * 24 * 60 * 60)); // 12 months
   const advisorCliffUnlockAmount = getAmountInLamports(166666.666666, 6);
   const advisorAmountPerPeriod = getAmountInLamports(13888.888888, 6);
-  const advisorVestingFrequency = new BN(2626560); // 1 month interval
+  const advisorVestingFrequency = new BN(2628000); // 1 month interval
   const advisorNumberOfPeriod = new BN(24); // 24 months
 
   await createVestingEscrowV2(
@@ -292,7 +292,7 @@ async function main() {
   const communityCliffTime = activationTime.add(new BN(0)); // immediate vest
   const communityCliffUnlockAmount = getAmountInLamports(100000, 6);
   const communityAmountPerPeriod = getAmountInLamports(33333.333333, 6);
-  const communityVestingFrequency = new BN(2626560); // 1 month interval
+  const communityVestingFrequency = new BN(2628000); // 1 month interval
   const communityNumberOfPeriod = new BN(12); // 12 months
 
   await createVestingEscrowV2(
