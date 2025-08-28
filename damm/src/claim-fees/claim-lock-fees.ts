@@ -12,7 +12,7 @@ async function checkAndClaimLockFees(
 ) {
   try {
     // init AMM instance
-    const amm = await AmmImpl.create(connection, poolAddress);
+    const amm = await AmmImpl.create(connection as any, poolAddress);
 
     // get user's lock escrow info
     const lockEscrow = await amm.getUserLockEscrow(owner.publicKey);
@@ -64,7 +64,7 @@ async function checkAndClaimLockFees(
     if (payer) signers.push(payer);
     if (receiver) signers.push(tempWSolAcc);
 
-    const signature = await connection.sendTransaction(claimTx, signers);
+    const signature = await connection.sendTransaction(claimTx as any, signers);
 
     console.log(`Claim transaction sent: ${signature}`);
     console.log("Waiting for confirmation...");
