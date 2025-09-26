@@ -25,17 +25,22 @@ async function checkAndClaimLockFees(
     // check if there are unclaimed fees
     const unclaimedFees = lockEscrow.fee.unClaimed;
 
-    if (unclaimedFees.lp.isZero()) {
+    if (unclaimedFees?.lp?.isZero()) {
       console.log("No unclaimed fees available");
       return;
     }
 
     console.log("Unclaimed fees:");
-    console.log(`LP tokens: ${unclaimedFees.lp.toString()}`);
+    console.log(`LP tokens: ${unclaimedFees?.lp?.toString()}`);
     console.log(`Token A: ${unclaimedFees.tokenA.toString()}`);
     console.log(`Token B: ${unclaimedFees.tokenB.toString()}`);
 
     const amountToClaim = unclaimedFees.lp;
+
+    if (!amountToClaim) {
+      console.log("No LP amount available to claim");
+      return;
+    }
 
     const tempWSolAcc = Keypair.generate();
 
