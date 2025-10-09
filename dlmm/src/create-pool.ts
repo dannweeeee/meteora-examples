@@ -33,9 +33,7 @@ async function main() {
   );
   const quoteMintDecimals = 6;
 
-  const baseMint = new PublicKey(
-    "HXg47sf2Jei4P9zv95XiGcwgJ4L2igUDCm1ggQiYtYtG"
-  );
+  const baseMint = new PublicKey("YOUR_BASE_MINT_ADDRESS");
   const baseMintDecimals = 6;
 
   const initPrice = DLMM.getPricePerLamport(
