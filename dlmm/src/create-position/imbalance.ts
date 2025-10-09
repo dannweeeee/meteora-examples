@@ -15,7 +15,7 @@ async function createImbalancePosition() {
   );
 
   // Initialise user wallet (from bs58 private key)
-  const user = Keypair.fromSecretKey(bs58.decode(""));
+  const user = Keypair.fromSecretKey(bs58.decode("YOUR_USER_PRIVATE_KEY"));
   console.log("User wallet initialized:", user.publicKey.toBase58());
 
   // Initialise DLMM pool

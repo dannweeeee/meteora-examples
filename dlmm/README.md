@@ -2,6 +2,10 @@
 
 This folder contains examples for interacting with Meteora's DLMM.
 
+## Create a DLMM Pool
+
+- [Create a DLMM Pool](./src/create-pool.ts)
+
 ## Create a DLMM Position
 
 - [Create a balance position](./src/create-position/balance.ts)
@@ -16,6 +20,10 @@ This folder contains examples for interacting with Meteora's DLMM.
 ## Manage DLMM Position
 
 - [Add liquidity](./src/manage-position/add-liquidity.ts)
+
+## Seed DLMM Liquidity
+
+- [Seed liquidity](./src/seed-liquidity.ts)
 
 ## Getting Started
 
