@@ -1,8 +1,9 @@
 import { Connection, Keypair, PublicKey } from "@solana/web3.js";
 import { BN } from "@coral-xyz/anchor";
 import {
+  ActivationType,
+  BaseFeeMode,
   CpAmm,
-  FeeSchedulerMode,
   getBaseFeeParams,
   getDynamicFeeParams,
   getSqrtPriceFromPrice,
@@ -32,7 +33,7 @@ import {
     minBaseFeeBps: 50, // 0.5%
     useDynamicFee: true,
     isLockLiquidity: true,
-    feeSchedulerMode: FeeSchedulerMode.Exponential,
+    baseFeeMode: BaseFeeMode.FeeSchedulerExponential,
     numberOfPeriod: 120, // 60 peridos
     totalDuration: 120, // 60 * 60
   };
@@ -86,21 +87,26 @@ import {
   });
 
   const baseFeeParams = getBaseFeeParams(
-    POOL_CONFIG.maxBaseFeeBps,
-    POOL_CONFIG.minBaseFeeBps,
-    POOL_CONFIG.feeSchedulerMode,
-    POOL_CONFIG.numberOfPeriod,
-    POOL_CONFIG.totalDuration
+    {
+      baseFeeMode: POOL_CONFIG.baseFeeMode,
+      feeSchedulerParam: {
+        startingFeeBps: POOL_CONFIG.minBaseFeeBps,
+        endingFeeBps: POOL_CONFIG.maxBaseFeeBps,
+        numberOfPeriod: POOL_CONFIG.numberOfPeriod,
+        totalDuration: POOL_CONFIG.totalDuration,
+      },
+    },
+    POOL_CONFIG.tokenBDecimals,
+    ActivationType.Slot
   );
+
   const dynamicFeeParams = POOL_CONFIG.useDynamicFee
     ? getDynamicFeeParams(POOL_CONFIG.minBaseFeeBps)
     : null;
 
   const poolFees: PoolFeesParams = {
     baseFee: baseFeeParams,
-    protocolFeePercent: 20,
-    partnerFeePercent: 0,
-    referralFeePercent: 20,
+    padding: [],
     dynamicFee: dynamicFeeParams,
   };
   const positionNft = Keypair.generate();
@@ -123,7 +129,7 @@ import {
     initSqrtPrice: initSqrtPrice,
     poolFees: poolFees,
     hasAlphaVault: false,
-    activationType: 0,
+    activationType: ActivationType.Slot,
     collectFeeMode: 0,
     activationPoint: null,
     tokenAProgram,

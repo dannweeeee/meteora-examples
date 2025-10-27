@@ -16,7 +16,7 @@
   "description": "",
   "dependencies": {
     "@coral-xyz/anchor": "^0.31.0",
-    "@meteora-ag/cp-amm-sdk": "^1.0.9",
+    "@meteora-ag/cp-amm-sdk": "^1.2.3",
     "@solana/spl-token": "^0.4.13",
     "@solana/web3.js": "^1.98.0",
     "bs58": "^6.0.0",

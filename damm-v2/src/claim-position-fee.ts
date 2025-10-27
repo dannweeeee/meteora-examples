@@ -7,7 +7,7 @@ import {
 import {
   CpAmm,
   getTokenProgram,
-  getUnClaimReward,
+  getUnClaimLpFee,
 } from "@meteora-ag/cp-amm-sdk";
 import { BN, Wallet } from "@coral-xyz/anchor";
 import bs58 from "bs58";
@@ -51,7 +51,7 @@ async function checkAndClaimPositionFee() {
     console.log(positionState.metrics.totalClaimedAFee.toString());
     console.log(positionState.metrics.totalClaimedBFee.toString());
 
-    const unClaimedReward = getUnClaimReward(poolState, positionState);
+    const unClaimedReward = getUnClaimLpFee(poolState, positionState);
 
     const totalPositionFeeA = positionState.metrics.totalClaimedAFee.add(
       unClaimedReward.feeTokenA
