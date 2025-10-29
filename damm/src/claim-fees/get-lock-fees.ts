@@ -1,7 +1,5 @@
 import { Connection, PublicKey, Keypair } from "@solana/web3.js";
 import AmmImpl from "@meteora-ag/dynamic-amm-sdk";
-import bs58 from "bs58";
-import { ComputeBudgetProgram } from "@solana/web3.js";
 
 async function checkLockFees(
   connection: Connection,
@@ -22,7 +20,7 @@ async function checkLockFees(
   // check if there are unclaimed fees
   const unclaimedFees = lockEscrow.fee.unClaimed;
 
-  if (unclaimedFees.lp.isZero()) {
+  if (unclaimedFees?.lp?.isZero()) {
     console.log("No unclaimed fees available");
     return;
   }

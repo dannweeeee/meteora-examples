@@ -5,7 +5,7 @@
   "scripts": {
     "create-constant-product-pool": "tsx src/create-pool/constant-product.ts",
     "claim-lock-fees": "tsx src/claim-fees/claim-lock-fees.ts",
-    "get-lock-fees": "tsx src/claim-fees/get-fees.ts"
+    "get-lock-fees": "tsx src/claim-fees/get-lock-fees.ts"
   },
   "keywords": [],
   "author": "@dannweeeee",
