@@ -61,7 +61,7 @@ async function initializeMultiplePositionsAndAddLiquidity() {
 
   // =========================================
 
-  // Wide position lower bin: getBinIdFromPrice at initial price per lamport
+  // lower bin: getBinIdFromPrice at initial price per lamport
   const lowerBinId = dlmmPool.getBinIdFromPrice(
     initialPricePerLamport.toNumber(),
     false
@@ -70,34 +70,33 @@ async function initializeMultiplePositionsAndAddLiquidity() {
     getPriceOfBinByBinId(lowerBinId, dlmmPool.lbPair.binStep)
   ).mul(new Decimal(10 ** (tokenBaseDecimals - tokenQuoteDecimals)));
 
-  // Wide position upper bin: up to 2x price, need price in tokens for getBinIdFromPrice
+  // upper bin: for this example, up to 2x price, need price in tokens for getBinIdFromPrice
   const upperBinPrice_numeric = lowerBinPricePerToken.toNumber() * 2;
-  const wideRangeUpperBinId = dlmmPool.getBinIdFromPrice(
+  const upperBinId = dlmmPool.getBinIdFromPrice(
     upperBinPrice_numeric / 10 ** (tokenBaseDecimals - tokenQuoteDecimals),
     false
   );
-  const wideRangeUpperBinPricePerToken = new Decimal(
-    getPriceOfBinByBinId(wideRangeUpperBinId, dlmmPool.lbPair.binStep)
+  const upperBinPricePerToken = new Decimal(
+    getPriceOfBinByBinId(upperBinId, dlmmPool.lbPair.binStep)
   ).mul(new Decimal(10 ** (tokenBaseDecimals - tokenQuoteDecimals)));
 
   const totalBaseAmount = new BN(BASE_AMOUNT * 10 ** tokenBaseDecimals);
 
-  // Log the wide position's intended config
-  console.log("Wide position:", {
+  console.log("Position:", {
     baseAmount: formatAmountFromBaseUnits(totalBaseAmount, tokenBaseDecimals),
-    bins: `[${lowerBinId}, ${wideRangeUpperBinId}]`,
-    binPrices: `[${lowerBinPricePerToken.toString()}, ${wideRangeUpperBinPricePerToken.toString()}]`,
+    bins: `[${lowerBinId}, ${upperBinId}]`,
+    binPrices: `[${lowerBinPricePerToken.toString()}, ${upperBinPricePerToken.toString()}]`,
   });
 
-  const wideRangeEphemeralKeypairs: Keypair[] = [];
-  const { instructionsByPositions: wideInstructionsByPositions } =
+  const positionKeypairs: Keypair[] = [];
+  const { instructionsByPositions: positionInstructions } =
     await dlmmPool.initializeMultiplePositionAndAddLiquidityByStrategy(
       async (count: number) => {
         const kps: Keypair[] = [];
         for (let i = 0; i < count; i++) {
           const kp = Keypair.generate();
           kps.push(kp);
-          wideRangeEphemeralKeypairs.push(kp);
+          positionKeypairs.push(kp);
         }
         return kps;
       },
@@ -105,7 +104,7 @@ async function initializeMultiplePositionsAndAddLiquidity() {
       new BN(0),
       {
         minBinId: lowerBinId,
-        maxBinId: wideRangeUpperBinId,
+        maxBinId: upperBinId,
         strategyType: StrategyType.Spot,
       },
       vaultPda,
@@ -113,36 +112,26 @@ async function initializeMultiplePositionsAndAddLiquidity() {
       1
     );
 
-  // Send and confirm transactions for wide position
-  console.log(
-    `\nCreated ${wideInstructionsByPositions.length} wide position(s)`
-  );
+  console.log(`\nCreated ${positionInstructions.length} position(s)`);
 
-  // Log position public keys
-  wideRangeEphemeralKeypairs.forEach((kp, index) => {
-    console.log(
-      `Wide Position ${index + 1} public key:`,
-      kp.publicKey.toBase58()
-    );
+  positionKeypairs.forEach((kp, index) => {
+    console.log(`Position ${index + 1} public key:`, kp.publicKey.toBase58());
   });
 
-  console.log("\n=== Sending transactions for wide position(s) ===");
-  for (let i = 0; i < wideInstructionsByPositions.length; i++) {
+  console.log("\n=== Sending transactions for position(s) ===");
+  for (let i = 0; i < positionInstructions.length; i++) {
     const {
       positionKeypair,
       initializePositionIx,
       initializeAtaIxs,
       addLiquidityIxs,
-    } = wideInstructionsByPositions[i];
+    } = positionInstructions[i];
     console.log(
-      `\nProcessing wide position ${i + 1}/${
-        wideInstructionsByPositions.length
-      }`
+      `\nProcessing position ${i + 1}/${positionInstructions.length}`
     );
     console.log("Position public key:", positionKeypair.publicKey.toBase58());
 
-    // Step 1: Send ATA initialization and position initialization together
-    console.log("  → Step 1: Initializing wide position and ATAs...");
+    console.log("  → Step 1: Initializing ßposition and ATAs...");
     const initTx = new Transaction();
 
     // Add ATA initialization instructions
@@ -160,11 +149,8 @@ async function initializeMultiplePositionsAndAddLiquidity() {
       positionKeypair,
     ]);
     await connection.confirmTransaction(initSig, "confirmed");
-    console.log(
-      "  ✓ Wide Position initialized: https://solscan.io/tx/" + initSig
-    );
+    console.log("  ✓ Position initialized: https://solscan.io/tx/" + initSig);
 
-    // Step 2: Send liquidity additions in batches
     console.log(
       `  → Step 2: Adding liquidity (${addLiquidityIxs.length} batches)...`
     );
@@ -187,11 +173,11 @@ async function initializeMultiplePositionsAndAddLiquidity() {
       );
     }
 
-    console.log(`✅ Wide Position ${i + 1} completed successfully`);
+    console.log(`✅ Position ${i + 1} completed successfully`);
   }
 
   console.log(
-    "\n✅ All wide positions initialized and liquidity added successfully"
+    "\n✅ All positions initialized and liquidity added successfully"
   );
   process.exit(0);
 }
